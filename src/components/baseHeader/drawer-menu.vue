@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer v-model="$store.state.drawer" app right>
+  <v-navigation-drawer v-model="$store.state.drawer" app left>
     <v-list-item>
       <v-list-item-content>
         <v-list-item-title class="title">
