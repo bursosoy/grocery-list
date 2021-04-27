@@ -2,8 +2,8 @@
   <v-text-field
     ref="add"
     v-model.trim="newItem"
-    @click:append="addItem"
-    @keydown.enter="addItem"
+    @keydown.enter="!isInvalidInput && addItem()"
+    @keydown.esc="$store.dispatch('toggleIsAdding')"
     v-if="isAdding || !groceryItems.length"
     class="ma-4"
     hide-details="true"
@@ -11,8 +11,11 @@
     clearable
     outlined
     label="Add Item"
-    append-icon="mdi-arrow-right"
-  ></v-text-field>
+  >
+  <template v-slot:append>
+    <v-icon @click="addItem" :disabled="isInvalidInput">mdi-arrow-right</v-icon>
+  </template>
+  </v-text-field>
 </template>
 
 <script>
@@ -29,6 +32,9 @@ export default {
     isAdding() {
       return this.$store.getters.isAdding
     },
+    isInvalidInput(){
+      return this.newItem === ''
+    }
   },
   methods: {
     addItem() {
@@ -37,7 +43,6 @@ export default {
       }
       this.$store.dispatch('addItem', this.newItem)
       this.newItem = ''
-      this.$store.dispatch('toggleIsAdding')
     },
   },
 }

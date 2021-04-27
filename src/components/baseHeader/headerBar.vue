@@ -14,7 +14,7 @@
 <script>
 export default {
   components:{
-    'overflow-menu': require('./overflow-menu').default
+    'overflow-menu': require('./overflowMenu').default
   },
     methods: {
     toggleIsAdding() {

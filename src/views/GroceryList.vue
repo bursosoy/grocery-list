@@ -6,10 +6,11 @@
 </template>
 
 <script>
-import inputItem from '../components/groceryList/input-item.vue'
-import itemList from '../components/groceryList/item-list.vue'
 export default {
-  components: {inputItem, itemList},
+  components: {
+    'input-item': require('../components/groceryList/inputItem').default,
+    'item-list': require('../components/groceryList/itemList').default
+  }
 }
 </script>
 

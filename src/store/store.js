@@ -26,7 +26,7 @@ export default new Vuex.Store({
     }
   },
   mutations: {
-    toggleDrawer(state){
+    toggleDrawer(state) {
       state.drawer = !state.drawer
     },
     toggleIsAdding(state) {
@@ -40,16 +40,21 @@ export default new Vuex.Store({
     toggleIsAdding({ commit }) {
       commit('toggleIsAdding')
     },
-    toggleDrawer({ commit }){
+    toggleDrawer({ commit }) {
       commit('toggleDrawer')
     },
-    async removeItem(context, id) {
-      await axios.delete(`https://grocery-cart-4f82e-default-rtdb.firebaseio.com/grocery-items/${id}.json`)
+    async removeItem(context, item) {
+      let sureness = true
+      item.isImportant && (() => {
+        sureness = confirm('Are you sure?')
+      })()
+      if(sureness === false){return}
+      await axios.delete(`https://grocery-cart-4f82e-default-rtdb.firebaseio.com/grocery-items/${item.id}.json`)
         .then(res => res.statusText === 'OK' && (() => {
           context.dispatch('getGroceryItems')
-          context.dispatch('snackbar/toggleSnackBar',{
+          context.dispatch('snackbar/toggleSnackBar', {
             isActive: true,
-            message: 'Item has been deleted.',
+            message: `${item.name} has been deleted.`,
             timeout: 2000
           })
         })())
@@ -58,7 +63,7 @@ export default new Vuex.Store({
     async addItem(context, newItem) {
       const isDuplicate = context.state.groceryItems.some(item => item.name === newItem)
       if (isDuplicate) {
-        context.dispatch('dialog/toggleDialog',{
+        context.dispatch('dialog/toggleDialog', {
           isActive: true,
           title: 'Duplicate Item',
           message: `Do you really really need to buy that thing? You already have ${newItem} in your list buddy.`,
@@ -68,27 +73,39 @@ export default new Vuex.Store({
       else {
         const newGroceryItem = {
           name: newItem,
-          isSelected: false
+          isSelected: false,
+          isImportant: false,
+          time: new Date()
         }
         await axios.post('https://grocery-cart-4f82e-default-rtdb.firebaseio.com/grocery-items.json', newGroceryItem)
           .then(res => {
+            context.dispatch('toggleIsAdding')
             context.dispatch('getGroceryItems')
-            context.dispatch('snackbar/toggleSnackBar',{
+            context.dispatch('snackbar/toggleSnackBar', {
               isActive: true,
               message: `${newItem} has been added.`
             })
           })
           .catch(error => alert(error.message))
       }
-
     },
-    async patchGroceryItem(_,item) {
-      item.isSelected = !item.isSelected
-      await axios.patch(`https://grocery-cart-4f82e-default-rtdb.firebaseio.com/grocery-items/${item.id}.json`, {
-        isSelected: item.isSelected
-      })
-      .then(res => res)
-      .catch(error => alert(error.message))
+    async patchGroceryItem(context, payload) {
+      const isDuplicate = context.state.groceryItems.some(oldItem => oldItem.name === payload.item.name)
+      if (isDuplicate && payload.mode === 'edit') {
+        context.dispatch('dialog/toggleDialog', {
+          isActive: true,
+          title: 'Duplicate Item',
+          message: `Do you really really need to buy that thing? You already have ${payload.item.name} in your list buddy.`,
+          cta: 'OKAY :('
+        })
+      }
+      else {
+        await axios.patch(`https://grocery-cart-4f82e-default-rtdb.firebaseio.com/grocery-items/${payload.item.id}.json`, payload.item)
+          .then(res => (() => {
+            context.dispatch('getGroceryItems')
+          })())
+          .catch(error => alert(error.message))
+      }
     },
     async getGroceryItems(context) {
       await axios.get('https://grocery-cart-4f82e-default-rtdb.firebaseio.com/grocery-items.json')

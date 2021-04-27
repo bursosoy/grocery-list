@@ -8,8 +8,8 @@
 <script>
 export default {
   components: {
-    'drawer-menu': require('./baseHeader/drawer-menu.vue').default,
-    'header-bar': require('./baseHeader/header-bar.vue').default,
+    'drawer-menu': require('./baseHeader/drawerMenu.vue').default,
+    'header-bar': require('./baseHeader/headerBar.vue').default,
   },
 }
 </script>
