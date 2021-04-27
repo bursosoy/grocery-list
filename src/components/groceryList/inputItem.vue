@@ -3,8 +3,8 @@
     ref="add"
     v-model.trim="newItem"
     @keydown.enter="!isInvalidInput && addItem()"
-    @keydown.esc="$store.dispatch('toggleIsAdding')"
-    v-if="isAdding || !groceryItems.length"
+    @keydown.esc="$store.dispatch('toggleIsAdding'),newItem=''"
+    v-if="(isAdding || !groceryItems.length) && !isSearching"
     class="ma-4"
     hide-details="true"
     color="grey darken-2"
@@ -32,8 +32,16 @@ export default {
     isAdding() {
       return this.$store.getters.isAdding
     },
+    isSearching(){
+      return this.$store.getters.isSearching
+    },
     isInvalidInput(){
       return this.newItem === ''
+    }
+  },
+  watch:{
+    isAdding(){
+      !this.isAdding && (() => this.newItem = '')()
     }
   },
   methods: {

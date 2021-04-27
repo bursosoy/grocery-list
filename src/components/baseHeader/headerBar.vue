@@ -5,6 +5,9 @@
         <h4>Grocery List</h4>
       </v-toolbar-title>
       <v-btn icon v-if="$route.path === '/'">
+        <v-icon @click="toggleIsSearching" color="grey darken-4">mdi-magnify</v-icon>
+      </v-btn>
+      <v-btn icon v-if="$route.path === '/'">
         <v-icon @click="toggleIsAdding" color="grey darken-4">mdi-plus</v-icon>
       </v-btn>
       <overflow-menu></overflow-menu>
@@ -19,6 +22,12 @@ export default {
     methods: {
     toggleIsAdding() {
       this.$store.dispatch('toggleIsAdding')
+      this.$store.state.isSearching = false
+      this.$store.state.searchText = ''
+    },
+    toggleIsSearching() {
+      this.$store.dispatch('toggleIsSearching')
+      this.$store.state.isAdding = false
     },
     toggleDrawer(){
         this.$store.dispatch('toggleDrawer')

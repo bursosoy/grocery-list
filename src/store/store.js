@@ -10,6 +10,8 @@ export default new Vuex.Store({
   state() {
     return {
       isAdding: false,
+      isSearching: false,
+      searchText: '',
       groceryItems: [],
       drawer: false
     }
@@ -19,10 +21,13 @@ export default new Vuex.Store({
       state.groceryItems.sort((a, b) => {
         return a.name < b.name ? -1 : 1
       })
-      return state.groceryItems
+      return state.groceryItems.filter(item => item.name.toLowerCase().includes(state.searchText.toLowerCase()))
     },
     isAdding(state) {
       return state.isAdding
+    },
+    isSearching(state) {
+      return state.isSearching
     }
   },
   mutations: {
@@ -32,16 +37,30 @@ export default new Vuex.Store({
     toggleIsAdding(state) {
       state.isAdding = !state.isAdding
     },
+    toggleIsSearching(state) {
+      state.isSearching = !state.isSearching
+      if (state.isSearching === true){state.searchText = ''}
+    },
     addItem(state, newItem) {
       state.groceryItems.push(newItem)
+    },
+    updateSearchText(state, text){
+      if(text == null){text = ''}
+      state.searchText = text
     }
   },
   actions: {
     toggleIsAdding({ commit }) {
       commit('toggleIsAdding')
     },
+    toggleIsSearching({ commit }) {
+      commit('toggleIsSearching')
+    },
     toggleDrawer({ commit }) {
       commit('toggleDrawer')
+    },
+    updateSearchText({ commit }, text){
+      commit('updateSearchText', text)
     },
     async removeItem(context, item) {
       let sureness = true

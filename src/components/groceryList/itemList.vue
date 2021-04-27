@@ -101,7 +101,7 @@ export default {
     timeSince(date) {
         var seconds = Math.floor((new Date(new Date().toJSON()) - new Date(date)) / 1000);
         var divisors = [31536000, 2592000, 86400, 3600, 60, 1]
-        var description = ["yrs", "mos", "days", "hh", "m", "s"]
+        var description = ["yrs", "mos", "days", "h", "m", "s"]
         var result = [];
       
         var interval = seconds;
