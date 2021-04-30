@@ -60,15 +60,19 @@ export default new Vuex.Store({
       state.isSearching = !state.isSearching
       if (state.isSearching === true) { state.searchText = '' }
     },
-    addItem(state, newItem) {
-      state.groceryItems.push(newItem)
-    },
     updateSearchText(state, text) {
       if (text == null) { text = '' }
       state.searchText = text
+    },
+    // from async
+    addItem(state, newItem) {
+      state.groceryItems.push(newItem)
     }
   },
   actions: {
+    toggleDrawer({ commit }) {
+      commit('toggleDrawer')
+    },
     toggleIsAdding({ commit }) {
       commit('toggleIsAdding')
     },
@@ -78,28 +82,8 @@ export default new Vuex.Store({
     toggleIsSearching({ commit }) {
       commit('toggleIsSearching')
     },
-    toggleDrawer({ commit }) {
-      commit('toggleDrawer')
-    },
     updateSearchText({ commit }, text) {
       commit('updateSearchText', text)
-    },
-    async removeItem(context, item) {
-      let sureness = true
-      item.isImportant && (() => {
-        sureness = confirm('Are you sure?')
-      })()
-      if (sureness === false) { return }
-      await axios.delete(`https://grocery-cart-4f82e-default-rtdb.firebaseio.com/grocery-items/${item.id}.json`)
-        .then(res => res.statusText === 'OK' && (() => {
-          context.dispatch('getGroceryItems')
-          context.dispatch('snackbar/toggleSnackBar', {
-            isActive: true,
-            message: `${item.name} has been deleted.`,
-            timeout: 2000
-          })
-        })())
-        .catch(error => alert(error.message))
     },
     async addItem(context, newItem) {
       const isDuplicate = context.state.groceryItems.some(item => item.name === newItem)
@@ -129,6 +113,23 @@ export default new Vuex.Store({
           })
           .catch(error => alert(error.message))
       }
+    },
+    async removeItem(context, item) {
+      let sureness = true
+      item.isImportant && (() => {
+        sureness = confirm('Are you sure?')
+      })()
+      if (sureness === false) { return }
+      await axios.delete(`https://grocery-cart-4f82e-default-rtdb.firebaseio.com/grocery-items/${item.id}.json`)
+        .then(res => res.statusText === 'OK' && (() => {
+          context.dispatch('getGroceryItems')
+          context.dispatch('snackbar/toggleSnackBar', {
+            isActive: true,
+            message: `${item.name} has been deleted.`,
+            timeout: 2000
+          })
+        })())
+        .catch(error => alert(error.message))
     },
     async patchGroceryItem(context, payload) {
       const isDuplicate = context.state.groceryItems.some(oldItem => oldItem.name === payload.item.name)

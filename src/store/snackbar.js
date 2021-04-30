@@ -21,11 +21,6 @@ export default{
             state.snackbar.timeout = (() => {
                 return ((typeof payload.timeout) == 'undefined' ? 3000 : payload.timeout)
             })()
-            // console.log(
-            //     (typeof payload.timeout) == 'undefined' 
-            //     ? state.snackbar.timeout = 3000 
-            //     : payload.timeout
-            //     )
         }
     },
     actions:{
