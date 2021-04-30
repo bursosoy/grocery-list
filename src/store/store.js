@@ -9,22 +9,38 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state() {
     return {
+      appTitle: process.env.VUE_APP_TITLE,
       isAdding: false,
       isSearching: false,
+      isAlphaSorted: true,
       searchText: '',
       groceryItems: [],
       drawer: false
     }
   },
   getters: {
+    appTitle(state) {
+      return state.appTitle
+    },
     groceryItems(state) {
-      state.groceryItems.sort((a, b) => {
-        return a.name < b.name ? -1 : 1
-      })
-      return state.groceryItems.filter(item => item.name.toLowerCase().includes(state.searchText.toLowerCase()))
+      if (state.isAlphaSorted) {
+        let sortedArray = Array.from(state.groceryItems) // copies it but leaves the original instance unchanged
+        sortedArray.sort((a, b) => {
+          return a.name < b.name ? -1 : 1
+        })
+        return sortedArray.filter(item => item.name.toLowerCase().includes(state.searchText.toLowerCase()))
+      } else {
+        return state.groceryItems.filter(item => item.name.toLowerCase().includes(state.searchText.toLowerCase()))
+      }
+    },
+    filteredGroceryItems(_, getters) {
+      return getters.groceryItems
     },
     isAdding(state) {
       return state.isAdding
+    },
+    isAlphaSorted(state) {
+      return state.isAlphaSorted
     },
     isSearching(state) {
       return state.isSearching
@@ -37,15 +53,18 @@ export default new Vuex.Store({
     toggleIsAdding(state) {
       state.isAdding = !state.isAdding
     },
+    toggleIsAlphaSorted(state) {
+      state.isAlphaSorted = !state.isAlphaSorted
+    },
     toggleIsSearching(state) {
       state.isSearching = !state.isSearching
-      if (state.isSearching === true){state.searchText = ''}
+      if (state.isSearching === true) { state.searchText = '' }
     },
     addItem(state, newItem) {
       state.groceryItems.push(newItem)
     },
-    updateSearchText(state, text){
-      if(text == null){text = ''}
+    updateSearchText(state, text) {
+      if (text == null) { text = '' }
       state.searchText = text
     }
   },
@@ -53,13 +72,16 @@ export default new Vuex.Store({
     toggleIsAdding({ commit }) {
       commit('toggleIsAdding')
     },
+    toggleIsAlphaSorted({ commit }) {
+      commit('toggleIsAlphaSorted')
+    },
     toggleIsSearching({ commit }) {
       commit('toggleIsSearching')
     },
     toggleDrawer({ commit }) {
       commit('toggleDrawer')
     },
-    updateSearchText({ commit }, text){
+    updateSearchText({ commit }, text) {
       commit('updateSearchText', text)
     },
     async removeItem(context, item) {
@@ -67,7 +89,7 @@ export default new Vuex.Store({
       item.isImportant && (() => {
         sureness = confirm('Are you sure?')
       })()
-      if(sureness === false){return}
+      if (sureness === false) { return }
       await axios.delete(`https://grocery-cart-4f82e-default-rtdb.firebaseio.com/grocery-items/${item.id}.json`)
         .then(res => res.statusText === 'OK' && (() => {
           context.dispatch('getGroceryItems')

@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer v-model="$store.state.drawer" app left>
+  <v-navigation-drawer dark v-model="$store.state.drawer" app left mobile-breakpoint="768" color="grey darken-4">
     <v-list-item>
       <v-list-item-content>
         <v-list-item-title class="title">

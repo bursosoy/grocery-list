@@ -2,6 +2,7 @@
   <v-text-field
     ref="search"
     v-model.trim="searchItem"
+    @input="updateSearchText(searchItem)"
     @keydown.esc="dismiss"
     @blur="dismiss"
     v-if="isSearching"
@@ -38,9 +39,6 @@ export default {
     }
   },
   watch:{
-    searchItem(){
-      this.updateSearchText(this.searchItem)
-    },
     isSearching(){
       this.isSearching === false && (() => this.searchItem = '')()
     }

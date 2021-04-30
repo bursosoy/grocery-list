@@ -18,6 +18,6 @@ export default {
 
 <style lang="scss" scoped>
 .empty {
-  background-color: #eee;
+  background-color: #eee
 }
 </style>
